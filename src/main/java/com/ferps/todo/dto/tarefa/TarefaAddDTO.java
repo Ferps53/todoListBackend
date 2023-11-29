@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,10 +13,8 @@ public class TarefaAddDTO {
 
     private String titulo;
 
-    private String nomeUsuario;
-
     private String descricao;
 
-    private String dataExpiracao;
+    private LocalDateTime dataExpiracao;
 
 }

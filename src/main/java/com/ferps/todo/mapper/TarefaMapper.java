@@ -4,6 +4,7 @@ import com.ferps.todo.dto.tarefa.TarefaAddDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import com.ferps.todo.model.Tarefa;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface TarefaMapper {
 
     Tarefa toTarefa(TarefaFrontDTO tarefaFrontDTO);
 
-    Tarefa toTarefa(TarefaFrontDTO tarefaFrontDTO, Tarefa tarefa);
+    void toTarefa(TarefaFrontDTO tarefaFrontDTO, @MappingTarget Tarefa tarefa);
 
     Tarefa toTarefa(TarefaAddDTO tarefaAddDTO);
 

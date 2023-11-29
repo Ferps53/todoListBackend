@@ -9,6 +9,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
@@ -16,38 +17,34 @@ import org.eclipse.microprofile.jwt.Claims;
 import java.util.*;
 
 @ApplicationScoped
+@Transactional
 public class TarefaController {
 
     @Inject
     TarefaMapper tarefaMapper;
 
-    @Inject
-    @Claim(standard = Claims.sub)
-    String usuario;
+    public List<TarefaFrontDTO> getTarefas(String usuario){
+         List<Tarefa> listTarefa = Tarefa.find("idUsuario", usuario).list();
 
-    public List<TarefaFrontDTO> getTarefas(){
-        return tarefaMapper
-                .tolistTarefaDTO(Tarefa
-                        .find("usuario", usuario)
-                        .list());
+         return tarefaMapper.tolistTarefaDTO(listTarefa);
     }
 
-    public TarefaFrontDTO getTarefaUnica(Integer idTarefa){
+    public TarefaFrontDTO getTarefaUnica(Integer idTarefa, String usuario){
         Map<String, Object>params = new HashMap<>();
         params.put("usuario", usuario);
         params.put("idTarefa", idTarefa);
 
         Tarefa tarefa = (Tarefa) Tarefa.find(
-                "select t from Tarefa where usuario = :usuario and id_tarefa = :idTarefa order by data_expiracao asc"
+                "select t from Tarefa where nomeUsuario = :usuario and id = :idTarefa order by data_expiracao asc"
                 , params);
 
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
 
-    public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO){
+    public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO, String usuario){
         Tarefa tarefa =  tarefaMapper.toTarefa(tarefaAddDTO);
-        tarefa.setNomeUsuario(usuario);
+        tarefa.setIdUsuario(usuario);
         tarefa.persist();
         return tarefaMapper.toTarefaDTO(tarefa);
     }

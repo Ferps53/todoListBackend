@@ -21,7 +21,7 @@ public class Tarefa extends PanacheEntityBase {
     private Long id;
 
     @Column(name = "usuario")
-    private String nomeUsuario;
+    private String idUsuario;
 
     @Column(name = "titulo")
     private String titulo;

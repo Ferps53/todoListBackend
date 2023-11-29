@@ -13,6 +13,8 @@ public class TarefaFrontDTO {
 
     private String titulo;
 
+    private String idUsuario;
+
     private String descricao;
 
     private Boolean fgConcluida;

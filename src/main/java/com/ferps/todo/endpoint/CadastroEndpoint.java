@@ -2,6 +2,7 @@ package com.ferps.todo.endpoint;
 
 import com.ferps.todo.controller.CadastroController;
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
+import com.ferps.todo.filter.annotation.SessaoPublica;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -21,6 +22,7 @@ public class CadastroEndpoint {
     CadastroController cadastroController;
 
     @POST
+    @SessaoPublica
     public Response cadastrar(UsuarioFrontDTO usuarioFront){
         return cadastroController.cadastrarUsuario(usuarioFront);
     }

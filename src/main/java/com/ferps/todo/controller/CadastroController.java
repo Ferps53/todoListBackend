@@ -4,7 +4,6 @@ import com.ferps.todo.dto.UsuarioCadastro.CredenciaisDTO;
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioCadastroKeycloakDTO;
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
-import com.ferps.todo.filter.annotation.TipoSessao;
 import com.ferps.todo.restclient.CadastroKeycloakRestClient;
 import com.ferps.todo.restclient.UsuarioRestClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
-@TipoSessao
 public class CadastroController {
 
     @Inject

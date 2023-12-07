@@ -1,6 +1,6 @@
 package com.ferps.todo.filter;
 
-import com.ferps.todo.filter.annotation.TipoSessao;
+import com.ferps.todo.filter.annotation.SessaoPublica;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -22,7 +22,7 @@ public class FiltroSessao implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(!info.getResourceMethod().isAnnotationPresent(TipoSessao.class)){
+        if(!info.getResourceMethod().isAnnotationPresent(SessaoPublica.class)){
             validaToken(requestContext);
         }
     }

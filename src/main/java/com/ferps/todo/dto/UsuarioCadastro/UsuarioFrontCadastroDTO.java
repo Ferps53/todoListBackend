@@ -1,0 +1,18 @@
+package com.ferps.todo.dto.UsuarioCadastro;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UsuarioFrontCadastroDTO {
+
+    String email;
+
+    String nomeUsuario;
+
+    String senha;
+
+}

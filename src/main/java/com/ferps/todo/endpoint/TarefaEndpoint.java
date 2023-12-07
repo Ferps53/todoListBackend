@@ -3,7 +3,6 @@ package com.ferps.todo.endpoint;
 import com.ferps.todo.controller.TarefaController;
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -17,8 +16,6 @@ import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
-import java.util.List;
-
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/tarefa")
@@ -26,7 +23,7 @@ import java.util.List;
 @SecurityScheme(securitySchemeName = "oauth-todoList", type = SecuritySchemeType.OAUTH2,
         flows = @OAuthFlows(password = @OAuthFlow(tokenUrl =
                 "http://localhost:8180/auth/realms/TodoList/protocol/openid-connect/token")))
-@RolesAllowed("usuario")
+@SecurityRequirement(name = "oauth-todoList")
 public class TarefaEndpoint {
 
     @Inject

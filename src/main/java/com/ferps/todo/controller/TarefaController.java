@@ -1,20 +1,18 @@
 package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
-import com.ferps.todo.dto.tarefa.TarefaConcluirDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import com.ferps.todo.mapper.TarefaMapper;
 import com.ferps.todo.model.Tarefa;
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @ApplicationScoped
 @Transactional

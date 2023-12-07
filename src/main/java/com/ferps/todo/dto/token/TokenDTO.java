@@ -13,7 +13,7 @@ public class TokenDTO {
     private Integer tempoExpiracao;
 
     @JsonProperty("refresh_token")
-    private Integer refreshToken;
+    private String refreshToken;
 
     @JsonProperty("refresh_expires_in")
     private Integer tempoExpiracaoRefresh;

@@ -2,7 +2,7 @@ package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.UsuarioCadastro.CredenciaisDTO;
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioCadastroKeycloakDTO;
-import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontCadastroDTO;
+import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
 import com.ferps.todo.filter.annotation.TipoSessao;
 import com.ferps.todo.restclient.CadastroKeycloakRestClient;
@@ -35,7 +35,7 @@ public class CadastroController {
     CadastroKeycloakRestClient cadastroRestClient;
 
 
-    public Response cadastrarUsuario(UsuarioFrontCadastroDTO usuarioFront){
+    public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront){
         String grant = "client_credentials";
 
         TokenDTO jsonInteiro = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
@@ -48,7 +48,7 @@ public class CadastroController {
 
     }
 
-    private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontCadastroDTO usuarioFront) {
+    private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {
         CredenciaisDTO credenciais = new CredenciaisDTO("password",
                 usuarioFront.getSenha(),
                 false);

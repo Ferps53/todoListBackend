@@ -1,23 +1,31 @@
 package com.ferps.todo.controller;
 
+import com.ferps.todo.dto.tarefa.TokenNotificacaoDTO;
+import com.ferps.todo.mapper.FCMTokenMapper;
+import com.ferps.todo.model.RegistroTokenNotificacao;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.messaging.*;
-import io.quarkus.runtime.Startup;
-import io.quarkus.scheduler.Scheduled;
+import com.google.firebase.messaging.BatchResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class NotificationController {
 
+    @Inject
+    FCMTokenMapper fcmTokenMapper;
+
     public void iniciarFirebase() throws IOException {
+        System.out.println("Iniciando o Firebase...");
         FileInputStream serviceAccount = new FileInputStream("/home/felipe/Documentos/Prog/todoListBackend/src/main/resources/serviceFirebase.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -25,23 +33,19 @@ public class NotificationController {
         FirebaseApp.initializeApp(options);
     }
 
+    public BatchResponse enviarNotificacao(List<Message> messageList) throws FirebaseMessagingException {
+      return FirebaseMessaging.getInstance().sendAll(messageList);
+    }
 
-    public void enviarNotificacao() throws FirebaseMessagingException {
+    @Transactional
+    public TokenNotificacaoDTO salvarTokenFCM(TokenNotificacaoDTO token, String idUsuario){
+        RegistroTokenNotificacao registro = fcmTokenMapper.toRegistro(token);
+        registro.setIdUsuario(idUsuario);
 
-        List<Message> messageList = new ArrayList<>();
-        for (int i = 0; i <= 9; i++) {
-            Message message = Message.builder()
-                    .setNotification(Notification.builder()
-                            .setTitle("Albion Online")
-                            .setBody("O mmo rpg sandbox de mundo aberto!")
-                            .build())
-                    .setToken("fzqbiL0XQvC-Wq9cSGNmUC:APA91bFJO-7mHH68wPabRxL7EH_-ZMP92p6nxWmw8wa17xE2vKDcoGTAb1MbGws2mBeH_3apnjh84FWQGfx9k7v-zPI93Ocn_XnM4FNVVpZNJWqDBWACSerffORyYMf_n1vU6R0OuibL")
-                    .build();
-            messageList.add(message);
-        }
-        BatchResponse response = FirebaseMessaging.getInstance().sendAll(messageList);
-        System.out.println(response.getResponses());
+        registro.persist();
 
+
+        return fcmTokenMapper.toTokenDTO(registro);
     }
 
 

@@ -7,7 +7,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 @QuarkusMain
 public class Main {
 
-    public static void main(String[] args){
+   public static void main(String[] args){
         NotificationController notificationController = new NotificationController();
         try {
             notificationController.iniciarFirebase();

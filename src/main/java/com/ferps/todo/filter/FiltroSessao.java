@@ -11,8 +11,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
-import java.io.IOException;
-
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class FiltroSessao implements ContainerRequestFilter {
@@ -21,7 +19,7 @@ public class FiltroSessao implements ContainerRequestFilter {
     ResourceInfo info;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext){
         if(!info.getResourceMethod().isAnnotationPresent(SessaoPublica.class)){
             validaToken(requestContext);
         }

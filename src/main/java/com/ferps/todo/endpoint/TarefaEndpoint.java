@@ -10,20 +10,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
-import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
-import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/tarefa")
 @RequestScoped
-@SecurityScheme(securitySchemeName = "oauth-todoList", type = SecuritySchemeType.OAUTH2,
-        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl =
-                "http://localhost:8180/auth/realms/TodoList/protocol/openid-connect/token")))
-@SecurityRequirement(name = "oauth-todoList")
 public class TarefaEndpoint {
 
     @Inject

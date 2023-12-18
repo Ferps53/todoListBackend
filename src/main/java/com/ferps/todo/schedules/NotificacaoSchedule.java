@@ -27,6 +27,7 @@ public class NotificacaoSchedule {
 
     final List<RegistroTokenNotificacao> registroTokenNotificacaoList = RegistroTokenNotificacao.findAll().list();
 
+
     @Scheduled(every = "10s")
     public void enviarNotificacoes() throws FirebaseMessagingException {
         Instant start = Instant.now();
@@ -47,11 +48,11 @@ public class NotificacaoSchedule {
         System.out.println("Quantidade de sucesso: " + response.getSuccessCount());
         System.out.println("Quantidade de falhas: " + response.getFailureCount());
 
-
         Instant end = Instant.now();
 
         Duration timeElapsed = Duration.between(start, end);
         System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
+        System.out.println("-");
     }
 
 
@@ -71,7 +72,7 @@ public class NotificacaoSchedule {
         mapQuery.put("listIdUsuario", listIdUsuarios);
         mapQuery.put("agora", agora);
 
-        return Tarefa.list("select t from Tarefa t where idUsuario in(:listIdUsuario) and dataExpiracao < :agora ", mapQuery);
+        return Tarefa.list("idUsuario in(:listIdUsuario) and dataExpiracao < :agora ", mapQuery);
     }
 
     private List<List<Tarefa>> particionarLista(int quantidadePorLista, List<Tarefa> tarefaList){
@@ -90,6 +91,7 @@ public class NotificacaoSchedule {
             for (RegistroTokenNotificacao registro : registroTokenNotificacaoList){
                 if(registro.getIdUsuario().equals(tarefa.getIdUsuario())){
                     fcmToken = registro.getFcmToken();
+                    break;
                 }
             }
 
@@ -100,8 +102,6 @@ public class NotificacaoSchedule {
                             .build())
                     .setToken(fcmToken)
                     .build();
-            messageList.add(message);
-
             messageList.add(message);
         }
         return messageList;

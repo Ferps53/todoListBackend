@@ -1,7 +1,6 @@
 package com.ferps.todo.schedules;
 
 import com.ferps.todo.controller.NotificationController;
-import com.ferps.todo.endpoint.TarefaEndpoint;
 import com.ferps.todo.model.RegistroTokenNotificacao;
 import com.ferps.todo.model.Tarefa;
 import com.google.firebase.messaging.BatchResponse;
@@ -15,7 +14,10 @@ import jakarta.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -39,11 +41,10 @@ public class NotificacaoSchedule {
 
         ExecutorService executorService = Executors.newFixedThreadPool(100);
         for (Tarefa tarefa: listTarefas){
-           var processo = executorService.submit(new MessageBuilder(tarefa));
-
-           while(!processo.isDone()){
-               processo.get();
-           }
+            var processo = executorService.submit(new MessageBuilder(tarefa));
+            while(!processo.isDone()){
+                processo.get();
+            }
         }
 
         if(!messageList.isEmpty()){
@@ -53,13 +54,13 @@ public class NotificacaoSchedule {
             System.out.println("Quantidade de sucesso: " + response.getSuccessCount());
             System.out.println("Quantidade de falhas: " + response.getFailureCount());
 
-
             Duration timeElapsed = Duration.between(start, end);
             System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
             System.out.println("-");
+        }else {
+            System.out.println("Não foram encontradas notificações");
         }
     }
-
 
     private List<Tarefa> gerarListaTarefas(){
 
@@ -88,7 +89,7 @@ public class NotificacaoSchedule {
 
         @Override
         public void run() {
-            Instant start = Instant.now();
+            System.out.println(Thread.currentThread().getName() + ": está realizando build de tarefas");
             String fcmToken = null;
             String titulo = "Hora de Concluir a tarefa ':nomeTarefa'";
             titulo = titulo.replace(":nomeTarefa", tarefa.getTitulo());
@@ -108,11 +109,7 @@ public class NotificacaoSchedule {
                     .build();
 
             messageList.add(message);
-            Instant end = Instant.now();
-            Duration timeElapsed = Duration.between(start, end);
-            System.out.println("Time to build a message taken: "+ timeElapsed.getNano() +" nano");
-            System.out.println("-");
-
+            System.out.println(Thread.currentThread().getName() + ": CONCLUIU A TAREFA");
         }
     }
 

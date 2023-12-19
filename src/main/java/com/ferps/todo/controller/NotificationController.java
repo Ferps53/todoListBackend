@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class NotificationController {
@@ -34,16 +35,24 @@ public class NotificationController {
     }
 
     public BatchResponse enviarNotificacao(List<Message> messageList) throws FirebaseMessagingException {
-      return FirebaseMessaging.getInstance().sendAll(messageList);
+        return FirebaseMessaging.getInstance().sendAll(messageList);
     }
 
     @Transactional
     public TokenNotificacaoDTO salvarTokenFCM(TokenNotificacaoDTO token, String idUsuario){
-        RegistroTokenNotificacao registro = fcmTokenMapper.toRegistro(token);
+        Optional<RegistroTokenNotificacao> registroOp = RegistroTokenNotificacao.find("idUsuario", idUsuario).singleResultOptional();
+
+        new RegistroTokenNotificacao();
+        RegistroTokenNotificacao registro;
+
+        if(registroOp.isPresent()){
+            registro = registroOp.get();
+            registro.setFcmToken(token.getFcmToken());
+        }else{
+            registro = fcmTokenMapper.toRegistro(token);
+        }
         registro.setIdUsuario(idUsuario);
-
         registro.persist();
-
 
         return fcmTokenMapper.toTokenDTO(registro);
     }

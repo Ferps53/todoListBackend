@@ -17,16 +17,17 @@ import org.eclipse.microprofile.jwt.Claims;
 public class NotificationEndpoint {
 
     @Inject
+    NotificationController notificationController;
+
+    @Inject
     @Claim(standard = Claims.sub)
     String idUsuario;
 
-    @POST
+
+    @PUT
     @Path("/salvar/token")
     public Response salvarToken(TokenNotificacaoDTO token){
         TokenNotificacaoDTO tokenResponse = notificationController.salvarTokenFCM(token, idUsuario);
         return Response.ok(tokenResponse).build();
     }
-
-    @Inject
-    NotificationController notificationController;
 }

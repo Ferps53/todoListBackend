@@ -26,7 +26,7 @@ public class NotificationController {
 
     public void iniciarFirebase() throws IOException {
         System.out.println("Iniciando o Firebase...");
-        FileInputStream serviceAccount = new FileInputStream("/home/felipe/Documentos/Prog/todoListBackend/src/main/resources/serviceFirebase.json");
+        FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceFirebase.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();

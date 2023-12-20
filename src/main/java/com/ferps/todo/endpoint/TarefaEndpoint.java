@@ -40,6 +40,12 @@ public class TarefaEndpoint {
         return Response.ok(tarefaController.updateTarefa(tarefaFrontDTO, idTarefa)).build();
     }
 
+    @PUT
+    @Path("{id}/atualizarStatus")
+    public Response atualizarStatus(@PathParam("id") Integer idTarefa, TarefaFrontDTO tarefaFrontDTO){
+        return Response.ok(tarefaController.updateStatus(tarefaFrontDTO, idTarefa)).build();
+    }
+
     @DELETE
     @Path("{id}")
     public Response deleteTarefa(@PathParam("id") Integer idTarefa){

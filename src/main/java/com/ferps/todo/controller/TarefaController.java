@@ -63,6 +63,16 @@ public class TarefaController {
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
+    public TarefaFrontDTO updateStatus(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa){
+
+        Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
+
+        tarefa.setFgConcluida(tarefaFrontDTO.getFgConcluida());
+        tarefa.persist();
+
+        return tarefaMapper.toTarefaDTO(tarefa);
+    }
+
     public void deleteTarefa(Integer idTarefa){
         verifcarSeTarefaExiste(idTarefa).delete();
     }

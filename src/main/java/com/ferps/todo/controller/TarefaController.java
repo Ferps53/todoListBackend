@@ -55,9 +55,6 @@ public class TarefaController {
 
         Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
 
-        System.out.println("Dto: " + tarefaFrontDTO);
-        System.out.println("TarefaOrm: " + tarefa);
-
         tarefa.setTitulo(tarefaFrontDTO.getTitulo());
         tarefa.setDescricao(tarefaFrontDTO.getDescricao());
         tarefa.setDataExpiracao(LocalDateTime.parse(tarefaFrontDTO.getDataExpiracao()));

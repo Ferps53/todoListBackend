@@ -42,7 +42,6 @@ public class TarefaController {
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-
     public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO, String usuario){
         Tarefa tarefa =  tarefaMapper.toTarefa(tarefaAddDTO);
         tarefa.setIdUsuario(usuario);
@@ -55,6 +54,10 @@ public class TarefaController {
 
         Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
         tarefaMapper.toTarefa(tarefaFrontDTO, tarefa);
+
+        System.out.println("Dto: " + tarefaFrontDTO);
+        System.out.println("Orm: " + tarefa);
+
         tarefa.persist();
         return tarefaMapper.toTarefaDTO(tarefa);
     }

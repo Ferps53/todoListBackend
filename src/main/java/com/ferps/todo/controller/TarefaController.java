@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +54,13 @@ public class TarefaController {
     public TarefaFrontDTO updateTarefa(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa){
 
         Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
-        tarefaMapper.toTarefa(tarefaFrontDTO, tarefa);
 
         System.out.println("Dto: " + tarefaFrontDTO);
-        System.out.println("Orm: " + tarefa);
+        System.out.println("TarefaOrm: " + tarefa);
+
+        tarefa.setTitulo(tarefaFrontDTO.getTitulo());
+        tarefa.setDescricao(tarefaFrontDTO.getDescricao());
+        tarefa.setDataExpiracao(LocalDateTime.parse(tarefaFrontDTO.getDataExpiracao()));
 
         tarefa.persist();
         return tarefaMapper.toTarefaDTO(tarefa);

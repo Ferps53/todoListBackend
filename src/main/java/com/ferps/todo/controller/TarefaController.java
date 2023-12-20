@@ -46,6 +46,7 @@ public class TarefaController {
     public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO, String usuario){
         Tarefa tarefa =  tarefaMapper.toTarefa(tarefaAddDTO);
         tarefa.setIdUsuario(usuario);
+        tarefa.setFgConcluida(false);
         tarefa.persist();
         return tarefaMapper.toTarefaDTO(tarefa);
     }

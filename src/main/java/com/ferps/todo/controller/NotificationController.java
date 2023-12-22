@@ -40,7 +40,8 @@ public class NotificationController {
 
     @Transactional
     public TokenNotificacaoDTO salvarTokenFCM(TokenNotificacaoDTO token, String idUsuario){
-        Optional<RegistroTokenNotificacao> registroOp = RegistroTokenNotificacao.find("idUsuario", idUsuario).singleResultOptional();
+        Optional<RegistroTokenNotificacao> registroOp = RegistroTokenNotificacao.find("idUsuario", idUsuario)
+                .singleResultOptional();
 
         new RegistroTokenNotificacao();
         RegistroTokenNotificacao registro;

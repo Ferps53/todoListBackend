@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,14 @@ public class CadastroController {
 
         UsuarioCadastroKeycloakDTO usuarioCadastro = getUsuarioCadastroKeycloakDTO(usuarioFront);
 
-        Response responseCadastro = usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
+        try{
+            Response responseCadastro = usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
+            return Response.status(responseCadastro.getStatus()).build();
+        }catch (ClientWebApplicationException e){
+            return e.getResponse();
+        }
 
-        return  Response.status(responseCadastro.getStatus()).build();
+
     }
 
     private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {

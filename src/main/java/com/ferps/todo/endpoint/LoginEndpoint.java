@@ -24,6 +24,6 @@ public class LoginEndpoint {
     @POST
     @SessaoPublica
     public Response login(UsuarioFrontDTO usuarioFrontDTO){
-        return Response.ok(loginController.login(usuarioFrontDTO)).build();
+        return loginController.login(usuarioFrontDTO);
     }
 }

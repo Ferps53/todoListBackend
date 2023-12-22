@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 @ApplicationScoped
 public class LoginController {
@@ -19,11 +20,12 @@ public class LoginController {
     @ConfigProperty(name = "clientIdLogin")
     String clientId;
 
-    public TokenDTO login(UsuarioFrontDTO usuarioFrontDTO){
+    public Response login(UsuarioFrontDTO usuarioFrontDTO) {
 
-       return loginRestClient.getLoginToken(clientId, "password", usuarioFrontDTO.getNomeUsuario(), usuarioFrontDTO.getSenha());
-
+        try {
+            return Response.ok(loginRestClient.getLoginToken(clientId, "password", usuarioFrontDTO.getNomeUsuario(), usuarioFrontDTO.getSenha())).build();
+        } catch (ClientWebApplicationException e) {
+            return e.getResponse();
+        }
     }
-
-
 }

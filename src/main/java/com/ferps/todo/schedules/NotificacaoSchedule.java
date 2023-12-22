@@ -29,15 +29,20 @@ public class NotificacaoSchedule {
     @Inject
     NotificationController notificationController;
 
-    static final List<RegistroTokenNotificacao> registroTokenNotificacaoList = RegistroTokenNotificacao.findAll().list();
+    static List<RegistroTokenNotificacao> registroTokenNotificacaoList = RegistroTokenNotificacao.findAll().list();
     static List<Message> messageList = new CopyOnWriteArrayList<>();
 
-    @Scheduled(every = "5m")
+    @Scheduled(every = "1m")
     public void enviarNotificacoes() throws FirebaseMessagingException, ExecutionException, InterruptedException {
         Instant start = Instant.now();
+
+        registroTokenNotificacaoList = RegistroTokenNotificacao.listAll();
         messageList.clear();
-        System.out.println("Enviando Notifs!");
         final List<Tarefa> listTarefas = gerarListaTarefas();
+
+        System.out.println("List Registro:" +registroTokenNotificacaoList +"\n");
+        System.out.println("List Tarefas:" + listTarefas+"\n");
+        System.out.println("Enviando Notifs!");
 
         ExecutorService executorService = Executors.newFixedThreadPool(100);
         for (Tarefa tarefa: listTarefas){

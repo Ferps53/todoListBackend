@@ -33,7 +33,7 @@ public class CadastroController {
     CadastroKeycloakRestClient cadastroRestClient;
 
 
-    public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront){
+    public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront) {
         String grant = "client_credentials";
 
         TokenDTO jsonInteiro = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
@@ -42,8 +42,9 @@ public class CadastroController {
 
         UsuarioCadastroKeycloakDTO usuarioCadastro = getUsuarioCadastroKeycloakDTO(usuarioFront);
 
-        return usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
+        Response responseCadastro = usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
 
+        return  Response.status(responseCadastro.getStatus()).build();
     }
 
     private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {

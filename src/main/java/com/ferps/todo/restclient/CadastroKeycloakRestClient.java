@@ -8,7 +8,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@RegisterRestClient(configKey = "rest-cadastro")
+@RegisterRestClient(configKey = "rest-token")
 public interface CadastroKeycloakRestClient {
 
     @POST

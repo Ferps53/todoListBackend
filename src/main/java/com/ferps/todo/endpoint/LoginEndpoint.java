@@ -23,7 +23,7 @@ public class LoginEndpoint {
 
     @POST
     @SessaoPublica
-    public Response login(UsuarioFrontDTO usuarioFrontDTO){
+    public Response login(UsuarioFrontDTO usuarioFrontDTO) throws Throwable {
         return loginController.login(usuarioFrontDTO);
     }
 }

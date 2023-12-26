@@ -6,6 +6,7 @@ import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
 import com.ferps.todo.restclient.CadastroKeycloakRestClient;
 import com.ferps.todo.restclient.UsuarioRestClient;
+import io.vertx.codegen.doc.Token;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -37,9 +38,15 @@ public class CadastroController {
     public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront) {
         String grant = "client_credentials";
 
-        TokenDTO jsonInteiro = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
+        TokenDTO tokenDTO;
+        try {
+             tokenDTO = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
+        }catch (ClientWebApplicationException e){
+            e.printStackTrace();
+            return e.getResponse();
+        }
 
-        String token = "Bearer " + jsonInteiro.getAccessToken();
+        String token = "Bearer " + tokenDTO.getAccessToken();
 
         UsuarioCadastroKeycloakDTO usuarioCadastro = getUsuarioCadastroKeycloakDTO(usuarioFront);
 
@@ -47,13 +54,14 @@ public class CadastroController {
             Response responseCadastro = usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
             return Response.status(responseCadastro.getStatus()).build();
         }catch (ClientWebApplicationException e){
+            e.printStackTrace();
             return e.getResponse();
         }
 
 
     }
 
-    private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {
+    private UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {
         CredenciaisDTO credenciais = new CredenciaisDTO("password",
                 usuarioFront.getSenha(),
                 false);

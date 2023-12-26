@@ -20,12 +20,15 @@ public class LoginController {
     @ConfigProperty(name = "clientIdLogin")
     String clientId;
 
-    public Response login(UsuarioFrontDTO usuarioFrontDTO) {
+    public Response login(UsuarioFrontDTO usuarioFrontDTO) throws Throwable {
 
         try {
             return Response.ok(loginRestClient.getLoginToken(clientId, "password", usuarioFrontDTO.getNomeUsuario(), usuarioFrontDTO.getSenha())).build();
         } catch (ClientWebApplicationException e) {
-            return e.getResponse();
+            System.out.println(e.getMessage());
+
+
+            throw e.getCause();
         }
     }
 }

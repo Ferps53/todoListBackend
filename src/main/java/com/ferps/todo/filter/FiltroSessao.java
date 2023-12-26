@@ -28,7 +28,7 @@ public class FiltroSessao implements ContainerRequestFilter {
     public void validaToken(ContainerRequestContext requestContext){
         String token = requestContext.getHeaderString("Authorization");
         if(token == null || token.isEmpty()){
-            requestContext.abortWith(Response.ok("Token não encontrado").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN_TYPE).build());
+            requestContext.abortWith(Response.ok("Token não encontrado").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
         }
     }
 }

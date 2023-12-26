@@ -4,6 +4,8 @@ import com.ferps.todo.controller.NotificationController;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
+import java.nio.file.Paths;
+
 @QuarkusMain
 public class Main {
 

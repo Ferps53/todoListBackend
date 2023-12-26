@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,11 +28,18 @@ public class NotificationController {
 
     public void iniciarFirebase() throws IOException {
         System.out.println("Iniciando o Firebase...");
-        FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceFirebase.json");
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-        FirebaseApp.initializeApp(options);
+
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream("/serviceFirebase.json");
+        if(is != null){
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(is))
+                    .build();
+            FirebaseApp.initializeApp(options);
+        }else {
+            throw new IOException("Rapaiz");
+        }
+
     }
 
     public BatchResponse enviarNotificacao(List<Message> messageList) throws FirebaseMessagingException {

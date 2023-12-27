@@ -32,7 +32,7 @@ public class NotificacaoSchedule {
     static List<RegistroTokenNotificacao> registroTokenNotificacaoList = RegistroTokenNotificacao.findAll().list();
     static List<Message> messageList = new CopyOnWriteArrayList<>();
 
-    @Scheduled(every = "1m")
+    @Scheduled(every = "5m")
     public void enviarNotificacoes() throws FirebaseMessagingException, ExecutionException, InterruptedException {
         Instant start = Instant.now();
 

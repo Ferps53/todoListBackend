@@ -50,6 +50,9 @@ public class NotificacaoSchedule {
             while(!processo.isDone()){
                 processo.get();
             }
+            if(executorService.isTerminated()){
+                executorService.shutdown();
+            }
         }
 
         if(!messageList.isEmpty()){

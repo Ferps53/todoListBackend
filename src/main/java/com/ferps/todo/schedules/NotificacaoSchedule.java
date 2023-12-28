@@ -18,10 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @ApplicationScoped
 public class NotificacaoSchedule {
@@ -33,29 +30,36 @@ public class NotificacaoSchedule {
     static List<Message> messageList = new CopyOnWriteArrayList<>();
 
     @Scheduled(every = "5m")
-    public void enviarNotificacoes() throws FirebaseMessagingException, ExecutionException, InterruptedException {
+    public void enviarNotificacoes() throws FirebaseMessagingException, InterruptedException {
         Instant start = Instant.now();
 
         registroTokenNotificacaoList = RegistroTokenNotificacao.listAll();
         messageList.clear();
         final List<Tarefa> listTarefas = gerarListaTarefas();
 
-        System.out.println("List Registro:" +registroTokenNotificacaoList +"\n");
-        System.out.println("List Tarefas:" + listTarefas+"\n");
+        System.out.println("List Registro:" + registroTokenNotificacaoList + "\n");
+        System.out.println("List Tarefas:" + listTarefas + "\n");
         System.out.println("Enviando Notifs!");
 
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
-        for (Tarefa tarefa: listTarefas){
-            var processo = executorService.submit(new MessageBuilder(tarefa));
-            while(!processo.isDone()){
-                processo.get();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        try {
+            List<MessageBuilder> messageBuilderList = new ArrayList<>();
+
+            for (Tarefa tarefa : listTarefas) {
+                messageBuilderList.add(new MessageBuilder(tarefa));
             }
-            if(executorService.isTerminated()){
-                executorService.shutdown();
-            }
+            executorService.invokeAll(messageBuilderList);
+            executorService.shutdown();
+            System.out.println(executorService.isShutdown());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            executorService.shutdownNow();
         }
 
-        if(!messageList.isEmpty()){
+        if (!messageList.isEmpty()) {
             Instant end = Instant.now();
             BatchResponse response = notificationController.enviarNotificacao(messageList);
 
@@ -63,19 +67,19 @@ public class NotificacaoSchedule {
             System.out.println("Quantidade de falhas: " + response.getFailureCount());
 
             Duration timeElapsed = Duration.between(start, end);
-            System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
+            System.out.println("Time taken: " + timeElapsed.toMillis() + " milliseconds");
             System.out.println("-");
-        }else {
+        } else {
             System.out.println("Não foram encontradas notificações");
         }
     }
 
-    private List<Tarefa> gerarListaTarefas(){
+    private List<Tarefa> gerarListaTarefas() {
 
         final LocalDateTime agora = LocalDateTime.now().plusMinutes(5);
 
         final List<String> listIdUsuarios = new ArrayList<>();
-        for (RegistroTokenNotificacao registro : registroTokenNotificacaoList){
+        for (RegistroTokenNotificacao registro : registroTokenNotificacaoList) {
             listIdUsuarios.add(registro.getIdUsuario());
         }
 
@@ -87,28 +91,28 @@ public class NotificacaoSchedule {
         return Tarefa.list("idUsuario in(:listIdUsuario) and dataExpiracao < :agora", mapQuery);
     }
 
-    public static class MessageBuilder implements Runnable{
+    public static class MessageBuilder implements Callable<Message> {
 
-        public MessageBuilder(Tarefa tarefa){
+        public MessageBuilder(Tarefa tarefa) {
             this.tarefa = tarefa;
         }
 
         Tarefa tarefa;
 
         @Override
-        public void run() {
+        public Message call() {
             System.out.println(Thread.currentThread().getName() + ": está realizando build de tarefas");
             String fcmToken = null;
             String titulo = "Hora de Concluir a tarefa ':nomeTarefa'";
             titulo = titulo.replace(":nomeTarefa", tarefa.getTitulo());
 
-            for (RegistroTokenNotificacao registro : registroTokenNotificacaoList){
-                if(registro.getIdUsuario().equals(tarefa.getIdUsuario())){
+            for (RegistroTokenNotificacao registro : registroTokenNotificacaoList) {
+                if (registro.getIdUsuario().equals(tarefa.getIdUsuario())) {
                     fcmToken = registro.getFcmToken();
                     break;
                 }
             }
-            Message message =  Message.builder()
+            Message message = Message.builder()
                     .setNotification(Notification.builder()
                             .setTitle(titulo)
                             .setBody("Lembre-se de deixar suas tarefas em dia!")
@@ -118,6 +122,7 @@ public class NotificacaoSchedule {
 
             messageList.add(message);
             System.out.println(Thread.currentThread().getName() + ": CONCLUIU A TAREFA");
+            return message;
         }
     }
 

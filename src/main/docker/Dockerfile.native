@@ -7,11 +7,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native -t quarkus/todolist .
+# com.ferps.todo.docker build -f src/main/com.ferps.todo.docker/Dockerfile.native -t quarkus/todolist .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/todolist
+# com.ferps.todo.docker run -i --rm -p 8080:8080 quarkus/todolist
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8
@@ -23,5 +23,6 @@ COPY --chown=1001:root target/*-runner /work/application
 
 EXPOSE 8080
 USER 1001
+
 
 ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

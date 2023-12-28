@@ -6,11 +6,13 @@ import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
 import com.ferps.todo.restclient.CadastroKeycloakRestClient;
 import com.ferps.todo.restclient.UsuarioRestClient;
+import io.vertx.codegen.doc.Token;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,20 +35,33 @@ public class CadastroController {
     CadastroKeycloakRestClient cadastroRestClient;
 
 
-    public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront){
+    public Response cadastrarUsuario(UsuarioFrontDTO usuarioFront) {
         String grant = "client_credentials";
 
-        TokenDTO jsonInteiro = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
+        TokenDTO tokenDTO;
+        try {
+             tokenDTO = cadastroRestClient.getCredenciaisAdmin(secret, clientId, grant);
+        }catch (ClientWebApplicationException e){
+            e.printStackTrace();
+            return e.getResponse();
+        }
 
-        String token = "Bearer " + jsonInteiro.getAccessToken();
+        String token = "Bearer " + tokenDTO.getAccessToken();
 
         UsuarioCadastroKeycloakDTO usuarioCadastro = getUsuarioCadastroKeycloakDTO(usuarioFront);
 
-        return usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
+        try{
+            Response responseCadastro = usuarioRestClient.cadastrarUsuario(token, usuarioCadastro);
+            return Response.status(responseCadastro.getStatus()).build();
+        }catch (ClientWebApplicationException e){
+            e.printStackTrace();
+            return e.getResponse();
+        }
+
 
     }
 
-    private static UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {
+    private UsuarioCadastroKeycloakDTO getUsuarioCadastroKeycloakDTO(UsuarioFrontDTO usuarioFront) {
         CredenciaisDTO credenciais = new CredenciaisDTO("password",
                 usuarioFront.getSenha(),
                 false);

@@ -90,20 +90,7 @@ COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 EXPOSE 8080
 USER 185
 
-ENV DB_USERNAME="postgres"
-ENV DB_PASSWORD="fCABf33gca*AdbEECdG13Gf*DE6a3G1E"
-ENV DB_URL="postgresql://monorail.proxy.rlwy.net:31306/railway"
-
-ENV JWT_ISSUER="https://keycloak-production-4d08.up.railway.app/realms/TodoList"
-ENV JWT_PUBLIC_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlgOgSik2lE5/feQwp2jDE0MH2+FCYqNAnyJ1/vLCC1D4oTfJ3MzLmNJNOb4F/OwNsDEPW6zFp/RfV+AAoRApNSaK69iQDEXYxC2JAN2WWkcqhsbIbd0lby/1MQ8Ovn1aBkr+UlSipM/9A0htOeu9/Rx1RK107cmQ6LvRYinDQaIiJ3PukLleuYlxYtAx2zt6V6FJLr1RwS6iXHrx6xNszRiLW9B58wE+c1fFBihZXESLrOAKjZLWS80NnlUSmkIhJe+qAoFWJfqwVmU6dsBU2xMyh4SFITPhyXKpqLGuLSOuSF05feaD7zOpaZq3IH7EytKzBWnzgrauJ2dvyYHJjwIDAQAB"
-
-ENV CLIENT_ID_CADASTRO="admin-cli"
-ENV CLIENT_SECRET_CADASTRO="Rqu1yQnXNOpBqO2bsIuG2qu7NskeoTvF"
-ENV CLIENT_ID_LOGIN="front-cadastro"
-
-ENV CADASTRO_USER_URL="https://keycloak-production-4d08.up.railway.app/admin/realms/TodoList"
-ENV TOKEN_URL="https://keycloak-production-4d08.up.railway.app/realms/TodoList/protocol/openid-connect"
-
+ARG DB_USERNAME DB_PASSWORD DB_URL JWT_ISSUER JWT_PUBLIC_KEY CLIENT_ID_CADASTRO CLIENT_SECRET_CADASTRO CLIENT_ID_LOGIN CADASTRO_USER_URL TOKEN_URL
 
 ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"

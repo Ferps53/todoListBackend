@@ -76,7 +76,7 @@ public class NotificacaoSchedule {
 
     private List<Tarefa> gerarListaTarefas() {
 
-        final LocalDateTime agora = LocalDateTime.now().plusMinutes(5);
+        final LocalDateTime agora = LocalDateTime.now().plusMinutes(5).minusHours(3);
 
         final List<String> listIdUsuarios = new ArrayList<>();
         for (RegistroTokenNotificacao registro : registroTokenNotificacaoList) {
@@ -88,7 +88,7 @@ public class NotificacaoSchedule {
         mapQuery.put("listIdUsuario", listIdUsuarios);
         mapQuery.put("agora", agora);
 
-        return Tarefa.list("idUsuario in(:listIdUsuario) and dataExpiracao < :agora", mapQuery);
+        return Tarefa.list("idUsuario in(:listIdUsuario) and dataExpiracao < :agora and fgConcluida = false", mapQuery);
     }
 
     public static class MessageBuilder implements Callable<Message> {

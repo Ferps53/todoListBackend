@@ -1,6 +1,7 @@
 package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
+import com.ferps.todo.dto.tarefa.TarefaConcluirDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import com.ferps.todo.mapper.TarefaMapper;
 import com.ferps.todo.model.Tarefa;
@@ -63,7 +64,7 @@ public class TarefaController {
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-    public TarefaFrontDTO updateStatus(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa){
+    public TarefaFrontDTO updateStatus(TarefaConcluirDTO tarefaFrontDTO, Integer idTarefa){
         Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
         if(tarefaFrontDTO.getDataConclusao() == null){
             tarefa.setDataConclusao(null);

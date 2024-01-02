@@ -2,6 +2,7 @@ package com.ferps.todo.endpoint;
 
 import com.ferps.todo.controller.TarefaController;
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
+import com.ferps.todo.dto.tarefa.TarefaConcluirDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -42,7 +43,7 @@ public class TarefaEndpoint {
 
     @PUT
     @Path("{id}/atualizarStatus")
-    public Response atualizarStatus(@PathParam("id") Integer idTarefa, TarefaFrontDTO tarefaFrontDTO){
+    public Response atualizarStatus(@PathParam("id") Integer idTarefa, TarefaConcluirDTO tarefaFrontDTO){
         return Response.ok(tarefaController.updateStatus(tarefaFrontDTO, idTarefa)).build();
     }
 

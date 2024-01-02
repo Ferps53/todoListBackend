@@ -11,6 +11,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
+import java.util.Arrays;
+import java.util.Base64;
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class FiltroSessao implements ContainerRequestFilter {
@@ -28,7 +31,11 @@ public class FiltroSessao implements ContainerRequestFilter {
     public void validaToken(ContainerRequestContext requestContext){
         String token = requestContext.getHeaderString("Authorization");
         if(token == null || token.isEmpty()){
-            requestContext.abortWith(Response.ok("Token não encontrado").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
+            requestContext.abortWith(Response.ok("Token not found").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
+        }else if(!token.startsWith("Bearer ")){
+            requestContext.abortWith(Response.ok("Invalid Token").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
+        } else if (token.replace("Bearer ", "").trim().isEmpty()) {
+            requestContext.abortWith(Response.ok("Token not Found").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
         }
     }
 }

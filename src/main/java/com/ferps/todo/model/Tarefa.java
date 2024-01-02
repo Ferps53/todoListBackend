@@ -32,6 +32,9 @@ public class Tarefa extends PanacheEntityBase {
     @Column(name = "fg_concluida", columnDefinition = "boolean default false")
     private Boolean fgConcluida;
 
+    @Column(name = "dt_conclusao")
+    private LocalDateTime dataConclusao;
+
     @CreationTimestamp
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;

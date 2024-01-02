@@ -8,6 +8,7 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
@@ -64,8 +65,12 @@ public class TarefaController {
     }
 
     public TarefaFrontDTO updateStatus(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa){
-
         Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
+        if(tarefaFrontDTO.getDataConclusao() == null){
+            tarefa.setDataConclusao(null);
+        }else{
+            tarefa.setDataConclusao(LocalDateTime.parse(tarefaFrontDTO.getDataConclusao()));
+        }
 
         tarefa.setFgConcluida(tarefaFrontDTO.getFgConcluida());
         tarefa.persist();

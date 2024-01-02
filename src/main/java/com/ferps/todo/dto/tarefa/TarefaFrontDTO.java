@@ -23,4 +23,6 @@ public class TarefaFrontDTO {
 
     private String dataExpiracao;
 
+    private String dataConclusao;
+
 }

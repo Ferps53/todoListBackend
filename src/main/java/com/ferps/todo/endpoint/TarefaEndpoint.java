@@ -58,6 +58,4 @@ public class TarefaEndpoint {
     public Response getTarefaUnica(@PathParam("id") Integer idTarefa){
         return Response.ok(tarefaController.getTarefaUnica(idTarefa, idUsuario)).build();
     }
-
-
 }

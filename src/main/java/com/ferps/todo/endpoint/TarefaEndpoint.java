@@ -4,6 +4,7 @@ import com.ferps.todo.controller.TarefaController;
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
 import com.ferps.todo.dto.tarefa.TarefaConcluirDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
+import com.ferps.todo.dto.tarefa.TarefaLixeiraDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -30,6 +31,12 @@ public class TarefaEndpoint {
         return Response.ok(tarefaController.getTarefas(idUsuario)).build();
     }
 
+    @GET
+    @Path("/lixeira")
+    public Response getTarefasLixeira(){
+        return Response.ok(tarefaController.getTarefasLixeira(idUsuario)).build();
+    }
+
     @POST
     public Response createTarefa(TarefaAddDTO tarefaAddDTO){
         return Response.ok(tarefaController.createTarefa(tarefaAddDTO, idUsuario)).build();
@@ -45,6 +52,12 @@ public class TarefaEndpoint {
     @Path("{id}/atualizarStatus")
     public Response atualizarStatus(@PathParam("id") Integer idTarefa, TarefaConcluirDTO tarefaFrontDTO){
         return Response.ok(tarefaController.updateStatus(tarefaFrontDTO, idTarefa)).build();
+    }
+
+    @PUT
+    @Path("{id}/atualizarStatusLixeira")
+    public Response atualizarStatusLixeira(@PathParam("id") Integer idTarefa, TarefaLixeiraDTO tarefaLixeiraDTO){
+        return Response.ok(tarefaController.updateStatusLixeira(tarefaLixeiraDTO, idTarefa)).build();
     }
 
     @DELETE

@@ -19,6 +19,10 @@ public class TarefaFrontDTO {
 
     private Boolean fgConcluida;
 
+    private Boolean fgLixeira;
+
+    private String dataEnvioLixeira;
+
     private String dataCriacao;
 
     private String dataExpiracao;

@@ -3,6 +3,7 @@ package com.ferps.todo.controller;
 import com.ferps.todo.dto.tarefa.TarefaAddDTO;
 import com.ferps.todo.dto.tarefa.TarefaConcluirDTO;
 import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
+import com.ferps.todo.dto.tarefa.TarefaLixeiraDTO;
 import com.ferps.todo.mapper.TarefaMapper;
 import com.ferps.todo.model.Tarefa;
 import io.quarkus.panache.common.Sort;
@@ -25,7 +26,21 @@ public class TarefaController {
     TarefaMapper tarefaMapper;
 
     public List<TarefaFrontDTO> getTarefas(String usuario){
-        List<Tarefa> listTarefa = Tarefa.find("idUsuario", Sort.by("dataExpiracao", Sort.Direction.Ascending), usuario).list();
+
+        Map<String, Object>params = new HashMap<>();
+        params.put("usuario", usuario);
+
+        List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
+
+        return tarefaMapper.tolistTarefaDTO(listTarefa);
+    }
+
+    public List<TarefaFrontDTO> getTarefasLixeira(String usuario){
+
+        Map<String, Object>params = new HashMap<>();
+        params.put("usuario", usuario);
+
+        List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = true", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
         return tarefaMapper.tolistTarefaDTO(listTarefa);
     }
@@ -76,6 +91,20 @@ public class TarefaController {
         tarefa.persist();
 
         return tarefaMapper.toTarefaDTO(tarefa);
+    }
+
+    public TarefaFrontDTO updateStatusLixeira(TarefaLixeiraDTO tarefaLixeiraDTO, Integer idTarefa){
+       Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
+       if(tarefaLixeiraDTO.getDataEnvioLixeira() == null){
+           tarefa.setDataEnvioLixeira(null);
+       }else{
+           tarefa.setDataEnvioLixeira(LocalDateTime.parse(tarefaLixeiraDTO.getDataEnvioLixeira()));
+       }
+
+       tarefa.setFgLixeira(tarefaLixeiraDTO.getFgLixeira());
+       tarefa.persist();
+
+       return tarefaMapper.toTarefaDTO(tarefa);
     }
 
     public void deleteTarefa(Integer idTarefa){

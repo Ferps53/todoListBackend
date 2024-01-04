@@ -33,7 +33,6 @@ public class Tarefa extends PanacheEntityBase {
     private Boolean fgConcluida;
 
     @Column(name = "fg_lixeira", columnDefinition = "boolean default false")
-
     private Boolean fgLixeira;
 
     @Column(name = "dt_exclusao")

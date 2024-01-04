@@ -63,6 +63,7 @@ public class TarefaController {
         Tarefa tarefa =  tarefaMapper.toTarefa(tarefaAddDTO);
         tarefa.setIdUsuario(usuario);
         tarefa.setFgConcluida(false);
+        tarefa.setFgLixeira(false);
         tarefa.persist();
         return tarefaMapper.toTarefaDTO(tarefa);
     }

@@ -2,33 +2,55 @@ package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
-import com.ferps.todo.restclient.LoginRestClient;
+import com.ferps.todo.model.Usuario;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.resteasy.reactive.ClientWebApplicationException;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.UUID;
 
 @ApplicationScoped
 public class LoginController {
 
     @Inject
-    @RestClient
-    LoginRestClient loginRestClient;
+    UsuarioController usuarioController;
 
-    @ConfigProperty(name = "clientIdLogin")
-    String clientId;
+    public Response login(UsuarioFrontDTO usuarioFrontDTO) {
 
-    public Response login(UsuarioFrontDTO usuarioFrontDTO) throws Throwable {
+        Usuario usuarioEncontrado = usuarioController.findUsuarioExistente(usuarioFrontDTO);
 
-        try {
-            return Response.ok(loginRestClient.getLoginToken(clientId, "password", usuarioFrontDTO.getNomeUsuario(), usuarioFrontDTO.getSenha())).build();
-        } catch (ClientWebApplicationException e) {
-            System.out.println(e.getMessage());
-
-
-            throw e.getCause();
+        if (usuarioEncontrado == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Usuário ou senha incorretos").build();
         }
+
+        return Response.status(Response.Status.OK).entity(gerarToken(usuarioEncontrado)).build();
     }
+
+    private TokenDTO gerarToken(Usuario usuario) {
+
+        final int EXPIRACAO_TOKEN_EM_SEGUNDOS = 3600;
+
+        String jwtToken = Jwt.issuer("Scheduler")
+                .issuedAt(System.currentTimeMillis())
+                .subject(usuario.getId().toString())
+                .expiresAt(System.currentTimeMillis() + EXPIRACAO_TOKEN_EM_SEGUNDOS)
+                .sign();
+
+
+        return new TokenDTO(jwtToken, EXPIRACAO_TOKEN_EM_SEGUNDOS);
+
+    }
+
+
 }

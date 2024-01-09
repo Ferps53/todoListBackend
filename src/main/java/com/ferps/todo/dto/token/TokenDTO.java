@@ -18,4 +18,8 @@ public class TokenDTO {
     @JsonProperty("refresh_expires_in")
     private Integer tempoExpiracaoRefresh;
 
+    public TokenDTO(String accessToken, Integer tempoExpiracao) {
+        this.accessToken = accessToken;
+        this.tempoExpiracao = tempoExpiracao;
+    }
 }

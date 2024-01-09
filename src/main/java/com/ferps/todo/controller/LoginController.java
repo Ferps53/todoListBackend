@@ -3,22 +3,10 @@ package com.ferps.todo.controller;
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.dto.token.TokenDTO;
 import com.ferps.todo.model.Usuario;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.UUID;
 
 @ApplicationScoped
 public class LoginController {

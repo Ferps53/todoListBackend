@@ -28,5 +28,6 @@ public class Usuario extends PanacheEntityBase {
     private String senha;
 
     @CreationTimestamp
+    @Column(name = "data_criacao_conta")
     private LocalDateTime dataCriacaoConta;
 }

@@ -6,6 +6,7 @@ import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import com.ferps.todo.dto.tarefa.TarefaLixeiraDTO;
 import com.ferps.todo.mapper.TarefaMapper;
 import com.ferps.todo.model.Tarefa;
+import com.ferps.todo.redis.RedisCacher;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -25,14 +26,25 @@ public class TarefaController {
     @Inject
     TarefaMapper tarefaMapper;
 
+    @Inject
+    RedisCacher redisCacher;
+
     public List<TarefaFrontDTO> getTarefas(String usuario){
 
-        Map<String, Object>params = new HashMap<>();
-        params.put("usuario", usuario);
+        if(redisCacher.getFromCache("tarefas"+usuario) == null){
+            Map<String, Object>params = new HashMap<>();
+            params.put("usuario", usuario);
 
-        List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
+            List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-        return tarefaMapper.tolistTarefaDTO(listTarefa);
+            redisCacher.SaveInCache("tarefas:"+usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
+
+            return tarefaMapper.tolistTarefaDTO(listTarefa);
+        }
+
+        List<TarefaFrontDTO> listFront = (List<TarefaFrontDTO>) redisCacher.getFromCache("tarefa"+usuario);
+
+        return listFront;
     }
 
     public List<TarefaFrontDTO> getTarefasLixeira(String usuario){

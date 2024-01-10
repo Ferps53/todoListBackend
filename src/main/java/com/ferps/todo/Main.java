@@ -1,6 +1,7 @@
 package com.ferps.todo;
 
 import com.ferps.todo.controller.NotificationController;
+import com.ferps.todo.redis.RedisConnector;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
@@ -11,7 +12,7 @@ public class Main {
 
    public static void main(String[] args){
         NotificationController notificationController = new NotificationController();
-        try {
+       try {
             notificationController.iniciarFirebase();
         } catch (Exception e){
             e.printStackTrace();

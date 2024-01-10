@@ -109,6 +109,11 @@
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>5.0.2</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

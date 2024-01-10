@@ -26,8 +26,6 @@ public class RedisConnector {
         try{
         final JedisPoolConfig poolConfig = buildPoolConfig();
         jedisPool = new JedisPool(poolConfig, redisUrl, 12393, redisUser, redisPassword);
-
-        System.out.println(jedisPool);
         }catch (Exception e){
             System.out.println("Erro: "+e.getMessage());
         }

@@ -14,10 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @ApplicationScoped
 @Transactional
@@ -31,20 +28,22 @@ public class TarefaController {
 
     public List<TarefaFrontDTO> getTarefas(String usuario){
 
-        if(redisCacher.getFromCache("tarefas"+usuario) == null){
+        if(redisCacher.getFromCache("tarefas:"+usuario) == null){
             Map<String, Object>params = new HashMap<>();
             params.put("usuario", usuario);
 
             List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-            redisCacher.SaveInCache("tarefas:"+usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
+            redisCacher.saveInCache("tarefas:"+usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
 
             return tarefaMapper.tolistTarefaDTO(listTarefa);
         }
 
-        List<TarefaFrontDTO> listFront = (List<TarefaFrontDTO>) redisCacher.getFromCache("tarefa"+usuario);
+        TarefaFrontDTO dto = (TarefaFrontDTO) redisCacher.getFromCache("tarefas:"+usuario);
 
-        return listFront;
+        List<TarefaFrontDTO> list = new ArrayList<>();
+        list.add(dto);
+        return list;
     }
 
     public List<TarefaFrontDTO> getTarefasLixeira(String usuario){

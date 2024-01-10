@@ -1,11 +1,11 @@
 package com.ferps.todo.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
-
-import javax.annotation.PostConstruct;
+import java.util.List;
 
 @ApplicationScoped
 public class RedisCacher {
@@ -13,12 +13,15 @@ public class RedisCacher {
 
     Jedis jedis = loadJedis();
 
-    public <T> void SaveInCache(String key, T object) {
+    public  void saveInCache(String key, List<TarefaFrontDTO> tarefaFrontDTOList) {
         try {
-            String json = new JSONObject(object).toString();
+            System.out.println(tarefaFrontDTOList);
+            String json = new JSONObject(tarefaFrontDTOList.get(0)).toString();
+            System.out.println(json);
             jedis.set(key, json);
 
         } catch (Exception e) {
+            System.out.println("Fui eu saveInCache");
             System.out.println(e.getMessage());
         } finally {
             jedis.close();
@@ -35,6 +38,7 @@ public class RedisCacher {
             System.out.println(parsedObject);
 
         } catch (Exception e) {
+            System.out.println("Fui eu getFromCache");
             System.out.println(e.getMessage());
         } finally {
             jedis.close();
@@ -43,8 +47,6 @@ public class RedisCacher {
         return parsedObject;
     }
 
-
-    @PostConstruct
     private Jedis loadJedis() {
         try {
             return RedisConnector.jedisPool.getResource();

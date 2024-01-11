@@ -10,8 +10,10 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 
 import java.io.FileInputStream;
@@ -26,6 +28,7 @@ public class NotificationController {
     @Inject
     FCMTokenMapper fcmTokenMapper;
 
+    @Startup
     public void iniciarFirebase() throws IOException {
         System.out.println("Iniciando o Firebase...");
 

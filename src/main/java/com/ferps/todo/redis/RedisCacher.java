@@ -1,57 +1,39 @@
 package com.ferps.todo.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ferps.todo.dto.tarefa.TarefaFrontDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
-import java.util.List;
 
 @ApplicationScoped
 public class RedisCacher {
 
-
-    Jedis jedis = loadJedis();
-
-    public  void saveInCache(String key, List<TarefaFrontDTO> tarefaFrontDTOList) {
-        try {
-            System.out.println(tarefaFrontDTOList);
-            String json = new JSONObject(tarefaFrontDTOList.get(0)).toString();
-            System.out.println(json);
+    public <T> void saveInCache(String key, T type) {
+        try (Jedis jedis = RedisConnector.jedisPool.getResource()) {
+            String json = new JSONObject(type).toString();
             jedis.set(key, json);
 
         } catch (Exception e) {
             System.out.println("Fui eu saveInCache");
             System.out.println(e.getMessage());
-        } finally {
-            jedis.close();
         }
     }
 
-    public Object getFromCache(String key) {
+    public <T> T getFromCache(String key, Class<T> classe) {
+        Jedis jedis = RedisConnector.jedisPool.getResource();
         ObjectMapper objectMapper = new ObjectMapper();
-        Object parsedObject = null;
-
+        T parsedObject = null;
         try {
             String jsonString = jedis.get(key);
-            parsedObject = objectMapper.readValue(jsonString, Object.class);
-            System.out.println(parsedObject);
-
+            if(jsonString != null){
+                parsedObject = objectMapper.readValue(jsonString, classe);
+            }
         } catch (Exception e) {
             System.out.println("Fui eu getFromCache");
             System.out.println(e.getMessage());
         } finally {
             jedis.close();
         }
-
         return parsedObject;
-    }
-
-    private Jedis loadJedis() {
-        try {
-            return RedisConnector.jedisPool.getResource();
-        } catch (Exception e) {
-            throw e;
-        }
     }
 }

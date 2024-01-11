@@ -28,18 +28,18 @@ public class TarefaController {
 
     public List<TarefaFrontDTO> getTarefas(String usuario){
 
-        if(redisCacher.getFromCache("tarefas:"+usuario) == null){
+        if(redisCacher.getFromCache("tarefas:"+usuario, TarefaFrontDTO.class) == null){
             Map<String, Object>params = new HashMap<>();
             params.put("usuario", usuario);
 
             List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-            redisCacher.saveInCache("tarefas:"+usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
+            redisCacher.saveInCache("tarefas:"+usuario, tarefaMapper.toTarefaDTO(listTarefa.get(0)));
 
             return tarefaMapper.tolistTarefaDTO(listTarefa);
         }
 
-        TarefaFrontDTO dto = (TarefaFrontDTO) redisCacher.getFromCache("tarefas:"+usuario);
+        TarefaFrontDTO dto = redisCacher.getFromCache("tarefas:"+usuario, TarefaFrontDTO.class);
 
         List<TarefaFrontDTO> list = new ArrayList<>();
         list.add(dto);

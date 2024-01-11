@@ -42,6 +42,14 @@ public class RedisCacher {
         return parsedObject;
     }
 
+    public void deleteKey(String key){
+        try(Jedis jedis = RedisConnector.jedisPool.getResource()){
+            jedis.del(key);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public  <T> List<T> getListFromCache(String key, Class<T> classe){
         ObjectMapper mapper = new ObjectMapper();
         List<T> objectList = null;

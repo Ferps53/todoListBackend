@@ -27,22 +27,22 @@ public class TarefaController {
     RedisCacher redisCacher;
 
     public List<TarefaFrontDTO> getTarefas(String usuario) {
-        TarefaFrontDTO dto = redisCacher.getFromCache("tarefas:" + usuario, TarefaFrontDTO.class);
+        long inicioContador = System.currentTimeMillis();
+        List<TarefaFrontDTO> dtoList = redisCacher.getListFromCache("tarefas:" + usuario, TarefaFrontDTO.class);
 
-        if (dto == null) {
+        if (dtoList == null || dtoList.isEmpty()) {
             Map<String, Object> params = new HashMap<>();
             params.put("usuario", usuario);
 
             List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-            redisCacher.saveInCache("tarefas:" + usuario, tarefaMapper.toTarefaDTO(listTarefa.get(0)));
+            redisCacher.saveInCache("tarefas:" + usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
 
             return tarefaMapper.tolistTarefaDTO(listTarefa);
         }
-
-        List<TarefaFrontDTO> list = new ArrayList<>();
-        list.add(dto);
-        return list;
+        long fimContador = System.currentTimeMillis();
+        System.out.println("Tempo decorrido: "+ (fimContador - inicioContador) + "ms");
+        return dtoList;
     }
 
     public List<TarefaFrontDTO> getTarefasLixeira(String usuario) {

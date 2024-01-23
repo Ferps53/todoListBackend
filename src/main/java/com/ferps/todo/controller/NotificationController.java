@@ -32,12 +32,15 @@ public class NotificationController {
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream("/serviceFirebase.json");
-        if(is != null){
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(is))
-                    .build();
-            FirebaseApp.initializeApp(options);
-        }else {
+        try {
+            if (is != null && FirebaseApp.getApps().isEmpty()) {
+                FirebaseOptions options = new FirebaseOptions.Builder()
+                        .setCredentials(GoogleCredentials.fromStream(is))
+                        .build();
+                FirebaseApp.initializeApp(options);
+
+            }
+        } catch (Exception e) {
             throw new IOException("Rapaiz");
         }
 
@@ -48,17 +51,17 @@ public class NotificationController {
     }
 
     @Transactional
-    public TokenNotificacaoDTO salvarTokenFCM(TokenNotificacaoDTO token, String idUsuario){
+    public TokenNotificacaoDTO salvarTokenFCM(TokenNotificacaoDTO token, String idUsuario) {
         Optional<RegistroTokenNotificacao> registroOp = RegistroTokenNotificacao.find("idUsuario", idUsuario)
                 .singleResultOptional();
 
         new RegistroTokenNotificacao();
         RegistroTokenNotificacao registro;
 
-        if(registroOp.isPresent()){
+        if (registroOp.isPresent()) {
             registro = registroOp.get();
             registro.setFcmToken(token.getFcmToken());
-        }else{
+        } else {
             registro = fcmTokenMapper.toRegistro(token);
         }
         registro.setIdUsuario(idUsuario);

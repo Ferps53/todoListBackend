@@ -26,106 +26,112 @@ public class TarefaController {
     @Inject
     RedisCacher redisCacher;
 
-    public List<TarefaFrontDTO> getTarefas(String usuario){
+    public List<TarefaFrontDTO> getTarefas(String usuario) {
+        List<TarefaFrontDTO> dtoList = redisCacher.getListFromCache("tarefas:" + usuario, TarefaFrontDTO.class);
 
-        if(redisCacher.getFromCache("tarefas:"+usuario, TarefaFrontDTO.class) == null){
-            Map<String, Object>params = new HashMap<>();
+        if (dtoList == null || dtoList.isEmpty()) {
+            Map<String, Object> params = new HashMap<>();
             params.put("usuario", usuario);
 
             List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = false", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-            redisCacher.saveInCache("tarefas:"+usuario, tarefaMapper.toTarefaDTO(listTarefa.get(0)));
+            redisCacher.saveInCache("tarefas:" + usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
 
             return tarefaMapper.tolistTarefaDTO(listTarefa);
         }
-
-        TarefaFrontDTO dto = redisCacher.getFromCache("tarefas:"+usuario, TarefaFrontDTO.class);
-
-        List<TarefaFrontDTO> list = new ArrayList<>();
-        list.add(dto);
-        return list;
+        return dtoList;
     }
 
-    public List<TarefaFrontDTO> getTarefasLixeira(String usuario){
+    public List<TarefaFrontDTO> getTarefasLixeira(String usuario) {
+        List<TarefaFrontDTO> listTarefasLixeira = redisCacher.getListFromCache("tarefas:lixeira:" + usuario, TarefaFrontDTO.class);
 
-        Map<String, Object>params = new HashMap<>();
-        params.put("usuario", usuario);
+        if(listTarefasLixeira == null || listTarefasLixeira.isEmpty()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("usuario", usuario);
 
-        List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = true", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
+            List<Tarefa> listTarefa = Tarefa.find("idUsuario = :usuario and fgLixeira = true", Sort.by("dataExpiracao", Sort.Direction.Ascending), params).list();
 
-        return tarefaMapper.tolistTarefaDTO(listTarefa);
+            redisCacher.saveInCache("tarefas:lixeira:"+usuario, tarefaMapper.tolistTarefaDTO(listTarefa));
+            return tarefaMapper.tolistTarefaDTO(listTarefa);
+        }
+        return listTarefasLixeira;
     }
 
-    public TarefaFrontDTO getTarefaUnica(Integer idTarefa, String usuario){
-       verifcarSeTarefaExiste(idTarefa);
+    public TarefaFrontDTO getTarefaUnica(Integer idTarefa, String usuario) {
+        verifcarSeTarefaExiste(idTarefa);
+        TarefaFrontDTO tarefaCache = redisCacher.getFromCache("tarefas:id"+idTarefa+":"+usuario, TarefaFrontDTO.class);
 
-        Map<String, Object>params = new HashMap<>();
-        params.put("usuario", usuario);
-        params.put("idTarefa", idTarefa);
+        if(tarefaCache == null){
+            Map<String, Object> params = new HashMap<>();
+            params.put("usuario", usuario);
+            params.put("idTarefa", idTarefa);
 
-        Tarefa tarefa = Tarefa.find(
-                "idUsuario = :usuario and id = :idTarefa"
-                , params).firstResult();
+            Tarefa tarefa = Tarefa.find(
+                    "idUsuario = :usuario and id = :idTarefa"
+                    , params).firstResult();
 
-        return tarefaMapper.toTarefaDTO(tarefa);
+            return tarefaMapper.toTarefaDTO(tarefa);
+        }
+        return tarefaCache;
     }
 
-    public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO, String usuario){
-        Tarefa tarefa =  tarefaMapper.toTarefa(tarefaAddDTO);
+    public TarefaFrontDTO createTarefa(TarefaAddDTO tarefaAddDTO, String usuario) {
+        Tarefa tarefa = tarefaMapper.toTarefa(tarefaAddDTO);
         tarefa.setIdUsuario(usuario);
         tarefa.setFgConcluida(false);
         tarefa.setFgLixeira(false);
         tarefa.persist();
+        redisCacher.deleteKey("tarefas:"+usuario);
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-    public TarefaFrontDTO updateTarefa(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa){
+    public TarefaFrontDTO updateTarefa(TarefaFrontDTO tarefaFrontDTO, Integer idTarefa) {
 
-        Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
+        Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
 
         tarefa.setTitulo(tarefaFrontDTO.getTitulo());
         tarefa.setDescricao(tarefaFrontDTO.getDescricao());
         tarefa.setDataExpiracao(LocalDateTime.parse(tarefaFrontDTO.getDataExpiracao()));
 
         tarefa.persist();
+        redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-    public TarefaFrontDTO updateStatus(TarefaConcluirDTO tarefaFrontDTO, Integer idTarefa){
+    public TarefaFrontDTO updateStatus(TarefaConcluirDTO tarefaFrontDTO, Integer idTarefa) {
         Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
-        if(tarefaFrontDTO.getDataConclusao() == null){
+        if (tarefaFrontDTO.getDataConclusao() == null) {
             tarefa.setDataConclusao(null);
-        }else{
+        } else {
             tarefa.setDataConclusao(LocalDateTime.parse(tarefaFrontDTO.getDataConclusao()));
         }
 
         tarefa.setFgConcluida(tarefaFrontDTO.getFgConcluida());
         tarefa.persist();
-
+        redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-    public TarefaFrontDTO updateStatusLixeira(TarefaLixeiraDTO tarefaLixeiraDTO, Integer idTarefa){
-       Tarefa tarefa =  verifcarSeTarefaExiste(idTarefa);
-       if(tarefaLixeiraDTO.getDataEnvioLixeira() == null){
-           tarefa.setDataEnvioLixeira(null);
-       }else{
-           tarefa.setDataEnvioLixeira(LocalDateTime.parse(tarefaLixeiraDTO.getDataEnvioLixeira()));
-       }
-
-       tarefa.setFgLixeira(tarefaLixeiraDTO.getFgLixeira());
-       tarefa.persist();
-
-       return tarefaMapper.toTarefaDTO(tarefa);
+    public TarefaFrontDTO updateStatusLixeira(TarefaLixeiraDTO tarefaLixeiraDTO, Integer idTarefa) {
+        Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
+        if (tarefaLixeiraDTO.getDataEnvioLixeira() != null) {
+            tarefa.setDataEnvioLixeira(LocalDateTime.parse(tarefaLixeiraDTO.getDataEnvioLixeira()));
+        }
+        tarefa.setFgLixeira(tarefaLixeiraDTO.getFgLixeira());
+        tarefa.persist();
+        redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
+        return tarefaMapper.toTarefaDTO(tarefa);
     }
 
-    public void deleteTarefa(Integer idTarefa){
-        verifcarSeTarefaExiste(idTarefa).delete();
+    public void deleteTarefa(Integer idTarefa) {
+        Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
+        tarefa.delete();
+        redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
     }
 
-    private Tarefa verifcarSeTarefaExiste(Integer idTarefa){
+    private Tarefa verifcarSeTarefaExiste(Integer idTarefa) {
         Optional<Tarefa> tarefaOp = Tarefa.findByIdOptional(idTarefa);
-        if(tarefaOp.isEmpty()){
+        if (tarefaOp.isEmpty()) {
             throw new NotFoundException("Sem tarefa");
         }
         return tarefaOp.get();

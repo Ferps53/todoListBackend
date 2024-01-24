@@ -126,7 +126,7 @@ public class TarefaController {
     public void deleteTarefa(Integer idTarefa) {
         Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
         tarefa.delete();
-        redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
+        redisCacher.deleteKey("tarefas:lixeira:"+tarefa.getIdUsuario());
     }
 
     private Tarefa verifcarSeTarefaExiste(Integer idTarefa) {

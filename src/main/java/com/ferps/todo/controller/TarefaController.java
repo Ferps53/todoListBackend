@@ -120,6 +120,7 @@ public class TarefaController {
         tarefa.setFgLixeira(tarefaLixeiraDTO.getFgLixeira());
         tarefa.persist();
         redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
+        redisCacher.deleteKey("tarefas:lixeira"+tarefa.getIdUsuario());
         return tarefaMapper.toTarefaDTO(tarefa);
     }
 
@@ -127,6 +128,7 @@ public class TarefaController {
         Tarefa tarefa = verifcarSeTarefaExiste(idTarefa);
         tarefa.delete();
         redisCacher.deleteKey("tarefas:"+tarefa.getIdUsuario());
+        redisCacher.deleteKey("tarefas:lixeira"+tarefa.getIdUsuario());
     }
 
     private Tarefa verifcarSeTarefaExiste(Integer idTarefa) {

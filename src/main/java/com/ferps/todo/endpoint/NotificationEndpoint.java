@@ -28,7 +28,6 @@ public class NotificationEndpoint {
     @Path("/salvar/token")
     public Response salvarToken(TokenNotificacaoDTO token){
         TokenNotificacaoDTO tokenResponse = notificationController.salvarTokenFCM(token, idUsuario);
-        System.out.println(tokenResponse);
         return Response.ok(tokenResponse).build();
     }
 }

@@ -1,6 +1,7 @@
 package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
+import com.ferps.todo.enums.UserRoles;
 import com.ferps.todo.mapper.UsuarioMapper;
 import com.ferps.todo.model.Usuario;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,7 +25,7 @@ public class CadastroController {
 
         if (usuario == null) {
 
-            Usuario novoUsuario = usuarioMapper.toUsuario(usuarioFrontDTO);
+           Usuario novoUsuario = usuarioMapper.toUsuario(usuarioFrontDTO);
 
             novoUsuario.persist();
             return Response.accepted(usuarioMapper.toUsuarioFrontDTO(novoUsuario)).build();

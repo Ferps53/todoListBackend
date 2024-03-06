@@ -31,13 +31,12 @@ public class LoginController {
 
         String jwtToken = Jwt.issuer("Scheduler")
                 .issuedAt(System.currentTimeMillis())
+                .groups("Aluno") //Coloca esse cara aqui para settar o grupo
                 .subject(usuario.getId().toString())
                 .expiresAt(System.currentTimeMillis() + EXPIRACAO_TOKEN_EM_SEGUNDOS)
                 .sign();
 
-
         return new TokenDTO(jwtToken, EXPIRACAO_TOKEN_EM_SEGUNDOS);
-
     }
 
 

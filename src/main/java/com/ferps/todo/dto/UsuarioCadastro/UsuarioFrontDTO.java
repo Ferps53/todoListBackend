@@ -15,4 +15,8 @@ public class UsuarioFrontDTO {
 
     String senha;
 
+    Integer userRoles;
+
+    Integer userType;
+
 }

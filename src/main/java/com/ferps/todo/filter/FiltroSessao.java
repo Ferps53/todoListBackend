@@ -30,7 +30,7 @@ public class FiltroSessao implements ContainerRequestFilter {
         String token = requestContext.getHeaderString("Authorization");
         if(token == null || token.isEmpty()){
             requestContext.abortWith(Response.ok("Token not found").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
-        }else if(!token.startsWith("Bearer ")){
+        } else if(!token.startsWith("Bearer ")){
             requestContext.abortWith(Response.ok("Invalid Token").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());
         } else if (token.replace("Bearer ", "").trim().isEmpty()) {
             requestContext.abortWith(Response.ok("Token not Found").status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN).build());

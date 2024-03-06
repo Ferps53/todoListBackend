@@ -3,6 +3,7 @@ package com.ferps.todo.controller;
 
 import com.ferps.todo.dto.UsuarioCadastro.UsuarioFrontDTO;
 import com.ferps.todo.model.Usuario;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class UsuarioController {
 
         for (Usuario usuario : listUsuarios) {
             if ((usuarioFrontDTO.getNomeUsuario().equals(usuario.getNome()) || usuarioFrontDTO.getEmail().equals(usuario.getEmail())) &&
-                    usuarioFrontDTO.getSenha().equals(usuario.getSenha())) {
+                    BcryptUtil.matches(usuarioFrontDTO.getSenha(), usuario.getSenha())) {
                 usuarioEncontrado = usuario;
                 break;
             }
